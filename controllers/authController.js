@@ -3,6 +3,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 //
 const login = async (req, res) => {
+  console.log("REQ BODY:", req.body);
   const { email, password } = req.body;
   //Vérifier si l’utilisateur existe
   try {
