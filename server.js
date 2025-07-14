@@ -2,27 +2,20 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
+const { authenticateJWT } = require('./middlewares/authMiddleware');
+const userRoutes = require('./routes/userRoutes'); // n’oublie pas d’importer userRoutes
+const authRoutes = require('./routes/authRoutes');
 
 dotenv.config();
 
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const reviewCycleRoutes = require('./routes/reviewCycleRoutes');
-const selfAssessmentRoutes = require('./routes/selfAssessmentRoutes');
-const managerAssessmentRoutes = require('./routes/managerAssessmentRoutes');
+const app = express(); // <- déclaration avant tout usage
 
-const { authenticateJWT } = require('./middlewares/authMiddleware');
-
-const app = express();
 const PORT = process.env.PORT || 5000;
 
-//  Middleware pour parser JSON
-app.use(express.json()); 
-
-// Sécurité HTTP headers
+app.use(express.json());
 app.use(helmet());
 
-// Connexion à MongoDB
+// Connexion MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -30,18 +23,17 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('MongoDB connected'))
 .catch((err) => console.error('MongoDB connection error:', err));
 
-// Routes
-app.use('/auth', authRoutes);
+// Middleware + Routes protégées
 app.use('/users', authenticateJWT, userRoutes);
-app.use('/cycles', authenticateJWT, reviewCycleRoutes);
-app.use('/self-assessments', authenticateJWT, selfAssessmentRoutes);
-app.use('/manager-assessments', authenticateJWT, managerAssessmentRoutes);
 
-//  Test route
+// Routes publiques
+app.use('/auth', authRoutes);
+
+// Test route
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
-   password: { type: String, required: true },
+  password: { type: String, required: true },
   email: { type: String, required: true, unique: true, index: true },
   role: {
     type: String,
@@ -9,6 +10,6 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   manager: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
-}, { timestamps: true });  // Add timestamps for createdAt and updatedAt
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
