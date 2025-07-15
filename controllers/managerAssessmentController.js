@@ -4,9 +4,11 @@ const Goal = require('../models/Goal');
 
 const getAssessmentForReview = async (req, res) => {
   try {
-    const { selfAssessmentId } = req.params; // Récupère l'ID mya3 selfAssm depuis les paramètres de la requête
-    const selfAssessment = await SelfAssessment.findById(selfAssessmentId).populate('user');  //
-    // Récupérer les objectifs (Goals)
+    const { selfAssessmentId } = req.params;
+    const selfAssessment = await SelfAssessment.findById(selfAssessmentId).populate('user');
+    if (!selfAssessment) {
+      return res.status(404).json({ message: "Self-assessment not found" });
+    }
     const goals = await Goal.find({ selfAssessment: selfAssessmentId });
     res.json({ selfAssessment, goals });
   } catch (err) {
@@ -16,12 +18,18 @@ const getAssessmentForReview = async (req, res) => {
 
 const submitManagerReview = async (req, res) => {
   try {
-    const { selfAssessment, ratings } = req.body;//
-    const review = new ManagerAssessment({ // Créer une nouvelle instance de ManagerAssessment
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { selfAssessment, ratings } = req.body;
+    if (!selfAssessment || !ratings) {
+      return res.status(400).json({ message: "selfAssessment and ratings are required" });
+    }
+    const review = new ManagerAssessment({
       selfAssessment,
-      manager: req.user.id, //
-      ratings,// Les évaluations fournies par le manager
-      completedAt: new Date() 
+      manager: req.user.id,
+      ratings,
+      completedAt: new Date()
     });
     await review.save();
     res.status(201).json(review);

@@ -5,14 +5,9 @@ const {
   bulkAddGoals,
   completeAssessment
 } = require('../controllers/selfAssessmentController');
-
-// GET /self-assessments?cycle=ID
-router.get('/', getOrCreateAssessment);
-
-// POST /self-assessments/goals
-router.post('/goals', bulkAddGoals);
-
-// POST /self-assessments/complete
-router.post('/complete', completeAssessment);
+const { authenticateJWT } = require('../middlewares/authMiddleware'); 
+router.get('/', authenticateJWT, getOrCreateAssessment);
+router.post('/goals', authenticateJWT, bulkAddGoals);
+router.post('/complete', authenticateJWT, completeAssessment);
 
 module.exports = router;

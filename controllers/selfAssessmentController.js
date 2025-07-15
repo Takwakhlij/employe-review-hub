@@ -4,21 +4,21 @@ const Goal = require('../models/Goal');
 const getOrCreateAssessment = async (req, res) => {
   try {
     let assessment = await SelfAssessment.findOne({ user: req.user.id, cycle: req.query.cycle });
-    if (!assessment) {  //
+    if (!assessment) {
       assessment = await SelfAssessment.create({ user: req.user.id, cycle: req.query.cycle });
     }
-    res.json(assessment); // Renvoie l’évaluation existante ou nouvellement créée
+    res.json(assessment);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-const  bulkAddGoals = async (req, res) => {
+const bulkAddGoals = async (req, res) => {
   try {
-    const { selfAssessmentId, goals } = req.body; // khoudh el selfAssessmentId w el goals men body mtaa requête
-    const createdGoals = await Goal.insertMany(goals.map(desc => ({ //
-      description: desc, // description mtaa goal
-      selfAssessment: selfAssessmentId //
+    const { selfAssessmentId, goals } = req.body;
+    const createdGoals = await Goal.insertMany(goals.map(desc => ({
+      description: desc,
+      selfAssessment: selfAssessmentId
     })));
     res.status(201).json(createdGoals);
   } catch (err) {
@@ -32,7 +32,7 @@ const completeAssessment = async (req, res) => {
     const updated = await SelfAssessment.findByIdAndUpdate(
       selfAssessmentId,
       { completedAt: new Date() },
-      { new: true } // Renvoie l’évaluation mise à jour
+      { new: true }
     );
     res.json(updated);
   } catch (err) {
@@ -40,4 +40,4 @@ const completeAssessment = async (req, res) => {
   }
 };
 
-module.exports = { getOrCreateAssessment,  bulkAddGoals, completeAssessment };
+module.exports = { getOrCreateAssessment, bulkAddGoals, completeAssessment };
