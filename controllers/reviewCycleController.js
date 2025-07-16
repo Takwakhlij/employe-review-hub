@@ -1,24 +1,24 @@
 const ReviewCycle = require('../models/ReviewCycle');
-// Create a new review cycle
+
 const createCycle = async (req, res) => {
   try {
-    const cycle = new ReviewCycle(req.body);// Create a new instance of ReviewCycle with the request body
+    const cycle = new ReviewCycle(req.body);
     await cycle.save();
-    res.status(201).json(cycle); // Respond with the created cycle
+    res.status(201).json(cycle); 
   } catch (err) {
-    res.status(400).json({ error: err.message }); //  errors 
+    res.status(400).json({ error: err.message });
   }
 };
-// List all review cycles
+
 const listCycles = async (req, res) => {
   try {
-    const cycles = await ReviewCycle.find(); // récupère tous les cycles dans la base de données.
+    const cycles = await ReviewCycle.find(); 
     res.json(cycles); // les renvoie en réponse JSON.
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-// Update the status of a review cycle
+
 const updateCycleStatus = async (req, res) => {
   try {
     const { id } = req.params;
