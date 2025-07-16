@@ -15,7 +15,6 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-// Middleware express.json() uniquement sur méthodes avec body
 app.use((req, res, next) => {
   if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
     express.json()(req, res, next);

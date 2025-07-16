@@ -2,25 +2,34 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
+// TODO/ 
+// Demander le role de l'utilisateur lors de l'inscription, si son role est "Manager",  el id mta"ou houa yethat fel manager 
+// si employe , lezem yootlob alih manager , wel manager heka ykoun different lel personne heki eli bech ta3mel signup 
 const register = async (req, res) => {
   const { name, email, password, role, manager } = req.body;
 
   try {
-    // Vérifier si l'utilisateur existe déjà
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: 'Utilisateur déjà existant' });
 
-    // Hasher le mot de passe
+    // Si role = Employé, vérifier que manager est fourni
+    if (role === 'Employé') {
+      if (!manager) {
+        return res.status(400).json({ message: 'L’employé doit avoir un manager.' });
+      }
+      const managerUser = await User.findById(manager);
+      if (!managerUser || managerUser.role !== 'Manager') {
+        return res.status(400).json({ message: 'Manager invalide.' });
+      }
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Créer un nouvel utilisateur
     const newUser = new User({
       name,
       email,
       password: hashedPassword,
       role,
-      manager: manager || null
+      manager: role === 'Employé' ? manager : null 
     });
 
     await newUser.save();
