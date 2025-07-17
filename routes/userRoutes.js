@@ -17,9 +17,9 @@ router.get('/me', authenticateJWT, getCurrentUser); // Récupérer les informati
 router.get('/managers', authenticateJWT, listManagers); // Récupérer la liste des managers users/managers
 
 // Admin only
-router.get('/', authenticateJWT, authorizeRole('Admin'), listUsers);// Lister tous les utilisateurs (admin uniquement) /users
-router.post('/', authenticateJWT, authorizeRole('Admin'), createUser); // Créer un utilisateur (admin uniquement) /users
-router.put('/:id', authenticateJWT, authorizeRole('Admin'), updateUser);// Mettre à jour un utilisateur (admin uniquement) /users/:id
-router.delete('/:id', authenticateJWT, authorizeRole('Admin'), deleteUser); // Supprimer un utilisateur (admin uniquement) /users/:id
+router.get('/', authenticateJWT, authorizeRole('Admin'), listUsers);//  /users
+router.post('/', authenticateJWT, authorizeRole('Admin'), createUser); //  /users
+router.put('/:id', authenticateJWT, authorizeRole('Admin'), updateUser);//  /users/:id
+router.delete('/:id', authenticateJWT, authorizeRole('Admin'), deleteUser); //  /users/:id
 
 module.exports = router;

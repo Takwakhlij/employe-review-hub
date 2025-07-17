@@ -15,15 +15,13 @@ const authenticateJWT = (req, res, next) => {
   const token = authHeader.split(' ')[1];
 
   try {
-    // Vérifier et décoder le token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Ajouter les infos décodées au req.user pour que les routes y aient accès
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
 
-    next(); // passer au middleware/route suivant.e
+    next(); 
   } catch (error) {
-    // Token invalide ou expiré
+  
     return res.status(403).json({ message: 'Token invalide ou expiré' });
   }
 };

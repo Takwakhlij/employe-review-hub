@@ -10,11 +10,8 @@ const selfAssessmentRoutes = require('./routes/selfAssessmentRoutes');
 const managerAssessmentRoutes = require('./routes/managerAssessmentRoutes');
 
 dotenv.config();
-
 const app = express();
-
 const PORT = process.env.PORT || 5000;
-
 app.use((req, res, next) => {
   if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
     express.json()(req, res, next);
@@ -22,9 +19,7 @@ app.use((req, res, next) => {
     next();
   }
 });
-
 app.use(helmet());
-
 // Connexion MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -42,9 +37,6 @@ app.use('/manager-assessments', authenticateJWT, managerAssessmentRoutes);
 
 // Routes publiques
 app.use('/auth', authRoutes);
-
-
-
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

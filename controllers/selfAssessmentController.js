@@ -16,7 +16,7 @@ const getOrCreateAssessment = async (req, res) => {
 const bulkAddGoals = async (req, res) => {
   try {
     const { selfAssessmentId, goals } = req.body;
-    const createdGoals = await Goal.insertMany(goals.map(desc => ({
+    const createdGoals = await Goal.insertmany(goals.map(desc => ({
       description: desc,
       selfAssessment: selfAssessmentId
     })));
