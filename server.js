@@ -8,17 +8,20 @@ const authRoutes = require('./routes/authRoutes');
 const reviewCycleRoutes = require('./routes/reviewCycleRoutes');
 const selfAssessmentRoutes = require('./routes/selfAssessmentRoutes');
 const managerAssessmentRoutes = require('./routes/managerAssessmentRoutes');
+const session = require('express-session');
+const passport = require('passport');
+const login2 = require('./controllers/loginOAuthController');
+const { logoutUser } = require('./controllers/logout');
+require('dotenv').config();
+require('./authgoogle'); 
+
 
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
-app.use((req, res, next) => {
-  if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
-    express.json()(req, res, next);
-  } else {
-    next();
-  }
-});
+app.use(express.json());
+
 app.use(helmet());
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -32,6 +35,34 @@ app.use('/users', authenticateJWT, userRoutes);
 app.use('/review-cycles', authenticateJWT, reviewCycleRoutes);
 app.use('/self-assessments', selfAssessmentRoutes);
 app.use('/manager-assessments', authenticateJWT, managerAssessmentRoutes);
+app.use('/authRoutes', login2);
+app.use('/authRoutes', logoutUser);
+
+app.get('/', (req, res) => {
+   res.send('<a href="/auth/google">Login with Google</a>');
+
+    })
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true 
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', {failureRedirect: '/'}), (req, res) => {
+    res.redirect('/profile'); }
+    )
+app.get('/profile', (req, res) => {
+   res.send(`Hello ${req.user.displayName}, welcome to your profile!`);})
+
+
+
+
+
 
 
 // Routes publiques
