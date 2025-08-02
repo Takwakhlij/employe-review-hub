@@ -35,13 +35,8 @@ app.use('/users', authenticateJWT, userRoutes);
 app.use('/review-cycles', authenticateJWT, reviewCycleRoutes);
 app.use('/self-assessments', selfAssessmentRoutes);
 app.use('/manager-assessments', authenticateJWT, managerAssessmentRoutes);
-app.use('/authRoutes', login2);
-app.use('/authRoutes', logoutUser);
 
-app.get('/', (req, res) => {
-   res.send('<a href="/auth/google">Login with Google</a>');
 
-    })
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -50,23 +45,29 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get('/', (req, res) => {
+   res.send('<a href="/auth/google">Login with Google</a>');
 
-
+    })
 app.get('/auth/google/callback',
   passport.authenticate('google', {failureRedirect: '/'}), (req, res) => {
     res.redirect('/profile'); }
-    )
+);
+
 app.get('/profile', (req, res) => {
-   res.send(`Hello ${req.user.displayName}, welcome to your profile!`);})
+        if (!req.user) {
+          return res.redirect('/');  
+        }
+        res.send(`Hello ${req.user.displayName}, welcome to your profile!`);
 
-
-
-
-
-
-
+});    
 // Routes publiques
 app.use('/auth', authRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+//SMS 
+const smsRoutes = require('./routes/SMS');
+app.use('/', smsRoutes);
+
+
